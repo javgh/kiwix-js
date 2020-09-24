@@ -672,25 +672,19 @@ define(['jquery', 'zimArchiveLoader', 'uiUtil', 'settingsStore','abstractFilesys
         });
     }
 
-    if (storages !== null && storages.length > 0) {
-        // Make a fake first access to device storage, in order to ask the user for confirmation if necessary.
-        // This way, it is only done once at this moment, instead of being done several times in callbacks
-        // After that, we can start looking for archives
-        storages[0].get("fake-file-to-read").then(searchForArchivesInPreferencesOrStorage,
-                                                  searchForArchivesInPreferencesOrStorage);
-    }
-    else {
-        // If DeviceStorage is not available, we display the file select components
-        displayFileSelect();
-        if (document.getElementById('archiveFiles').files && document.getElementById('archiveFiles').files.length>0) {
-            // Archive files are already selected, 
-            setLocalArchiveFromFileSelect();
-        }
-        else {
-            $("#btnConfigure").click();
-        }
-    }
+    var predefinedFiles = [{size: 380668076}];
+    selectedArchive = zimArchiveLoader.loadArchiveFromFiles(predefinedFiles, function (archive) {
+        document.getElementById('downloadInstruction').style.display = 'none';
+        $("#welcomeText").hide();
 
+        var urlSearchParams = new URLSearchParams(location.search);
+        var customTitle = urlSearchParams.get('title');
+        if (customTitle !== null) {
+          goToArticle(customTitle);
+        } else {
+          goToMainArticle();
+        }
+    });
 
     // Display the article when the user goes back in the browser history
     window.onpopstate = function(event) {

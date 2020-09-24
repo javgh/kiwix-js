@@ -203,7 +203,7 @@ define(['q'], function(Q) {
      * @param {Integer} size The number of bytes to read
      * @returns {Promise<Uint8Array>} A Promise for an array buffer with the read data 
      */
-    function readFileSlice(file, begin, size) {
+    function readFileSliceOrig(file, begin, size) {
         return Q.Promise(function (resolve, reject) {
             var reader = new FileReader();
             reader.onload = function (e) {
@@ -212,6 +212,24 @@ define(['q'], function(Q) {
             reader.onerror = reader.onabort = reject;
             reader.readAsArrayBuffer(file.slice(begin, begin + size));
         });
+    }
+
+    function readFileSlice(file, begin, size) {
+        var deferred = Q.defer();
+        var req = new XMLHttpRequest();
+        req.onload = function(e){
+            deferred.resolve(new Uint8Array(e.target.response));
+        };
+        req.onerror = req.onabort = function(e) {
+            deferred.reject(e);
+        };
+        req.open('GET', '/AAArSw6FbOwlx0_MYnlxlvo8LtFoM0zB6o_CxAvYn90LBQ/wikipedia_en_chemistry_maxi_2020-09.zim', true);
+        req.responseType = "arraybuffer";
+        var end = begin + size;
+        req.setRequestHeader('Range', 'bytes='+begin+'-'+end);
+        req.send(null);
+
+        return deferred.promise;
     }
 
     /**
