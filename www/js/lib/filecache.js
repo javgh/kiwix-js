@@ -91,8 +91,7 @@ define(['q'], function(Q) {
         this.insertAtTop(entry);
     };
     
-    // Create a 200k cache.
-    var cache = new LRUCache(100);
+    var cache = new LRUCache(1024);
 
     var hits = 0;
     var misses = 0;
@@ -100,14 +99,14 @@ define(['q'], function(Q) {
     /**
      * Read a certain byte range in the given file, breaking the range into chunks
      * that go through the cache.
-     * If a read of more than 2048 bytes is requested, do not use the cache.
+     * If a read of more than 32768 bytes is requested, do not use the cache.
      * @return {Promise} promise that resolves to the correctly concatenated data.
      */
     var read = function(file, begin, end) {
-        var blockSize = 2048;
+        var blockSize = 32768;
         // Read large chunks bypassing the block cache because we would have to
-        // stitch together too many blocks and would clog the cach.
-        if (end - begin > 2048)
+        // stitch together too many blocks and would clog the cache.
+        if (end - begin > 32768)
             return readInternal(file, begin, end);
         var readRequests = [];
         var blocks = {};
@@ -143,7 +142,7 @@ define(['q'], function(Q) {
             return result;
         });
     };
-    var readInternal = function(file, begin, end) {
+    var readInternalOrig = function(file, begin, end) {
         var deferred = Q.defer();
         var reader = new FileReader();
         reader.onload = function(e) {
@@ -153,6 +152,24 @@ define(['q'], function(Q) {
             deferred.reject(e);
         };
         reader.readAsArrayBuffer(file.slice(begin, end));
+        return deferred.promise;
+    };
+    var readInternal = function(file, begin, end) {
+        var deferred = Q.defer();
+        var req = new XMLHttpRequest();
+        req.onload = function(e){
+            deferred.resolve(new Uint8Array(e.target.response));
+        };
+        req.onerror = req.onabort = function(e) {
+            deferred.reject(e);
+        };
+        req.open('GET', '/AAArSw6FbOwlx0_MYnlxlvo8LtFoM0zB6o_CxAvYn90LBQ/wikipedia_en_chemistry_maxi_2020-09.zim', true);
+        req.responseType = "arraybuffer";
+        var adjustedEnd = Math.min(end, file.size)
+        adjustedEnd -= 1  // range end is specified inclusive
+        req.setRequestHeader('Range', 'bytes='+begin+'-'+adjustedEnd);
+        req.send(null);
+
         return deferred.promise;
     };
 

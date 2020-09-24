@@ -20,7 +20,7 @@
  * along with Kiwix (file LICENSE-GPLv3.txt).  If not, see <http://www.gnu.org/licenses/>
  */
 'use strict';
-define(['q'], function(Q) {
+define(['q', 'filecache'], function(Q, FileCache) {
 
     /**
      * A Regular Expression to match the first letter of a word even if preceded by Unicode punctuation
@@ -215,21 +215,7 @@ define(['q'], function(Q) {
     }
 
     function readFileSlice(file, begin, size) {
-        var deferred = Q.defer();
-        var req = new XMLHttpRequest();
-        req.onload = function(e){
-            deferred.resolve(new Uint8Array(e.target.response));
-        };
-        req.onerror = req.onabort = function(e) {
-            deferred.reject(e);
-        };
-        req.open('GET', '/AAArSw6FbOwlx0_MYnlxlvo8LtFoM0zB6o_CxAvYn90LBQ/wikipedia_en_chemistry_maxi_2020-09.zim', true);
-        req.responseType = "arraybuffer";
-        var end = begin + size;
-        req.setRequestHeader('Range', 'bytes='+begin+'-'+end);
-        req.send(null);
-
-        return deferred.promise;
+        return FileCache.read(file, begin, begin + size);
     }
 
     /**

@@ -672,7 +672,7 @@ define(['jquery', 'zimArchiveLoader', 'uiUtil', 'settingsStore','abstractFilesys
         });
     }
 
-    var predefinedFiles = [{size: 380668076}];
+    var predefinedFiles = [{name: 'remote', size: 380668076}];
     selectedArchive = zimArchiveLoader.loadArchiveFromFiles(predefinedFiles, function (archive) {
         document.getElementById('downloadInstruction').style.display = 'none';
         $("#welcomeText").hide();
