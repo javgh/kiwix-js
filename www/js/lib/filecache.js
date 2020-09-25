@@ -163,7 +163,7 @@ define(['q'], function(Q) {
         req.onerror = req.onabort = function(e) {
             deferred.reject(e);
         };
-        req.open('GET', '/AAArSw6FbOwlx0_MYnlxlvo8LtFoM0zB6o_CxAvYn90LBQ/wikipedia_en_chemistry_maxi_2020-09.zim', true);
+        req.open('GET', '/fANHCNNOgRNk0uc16BMFb5KoEbWrovtG9efLbS-toIYXmQ', true);
         req.responseType = "arraybuffer";
         var adjustedEnd = Math.min(end, file.size)
         adjustedEnd -= 1  // range end is specified inclusive
