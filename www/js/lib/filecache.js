@@ -91,7 +91,7 @@ define(['q'], function(Q) {
         this.insertAtTop(entry);
     };
     
-    var cache = new LRUCache(1024);
+    var cache = new LRUCache(4096);
 
     var hits = 0;
     var misses = 0;
@@ -99,14 +99,14 @@ define(['q'], function(Q) {
     /**
      * Read a certain byte range in the given file, breaking the range into chunks
      * that go through the cache.
-     * If a read of more than 32768 bytes is requested, do not use the cache.
+     * If a read of more than 8192 bytes is requested, do not use the cache.
      * @return {Promise} promise that resolves to the correctly concatenated data.
      */
     var read = function(file, begin, end) {
-        var blockSize = 32768;
+        var blockSize = 8192;
         // Read large chunks bypassing the block cache because we would have to
         // stitch together too many blocks and would clog the cache.
-        if (end - begin > 32768)
+        if (end - begin > 8192)
             return readInternal(file, begin, end);
         var readRequests = [];
         var blocks = {};
