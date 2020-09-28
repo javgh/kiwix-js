@@ -215,7 +215,11 @@ define(['q', 'filecache'], function(Q, FileCache) {
     }
 
     function readFileSlice(file, begin, size) {
-        return FileCache.read(file, begin, begin + size);
+        if (begin >= file.tailStart) {
+            return readFileSliceOrig(file.tailCache, begin - file.tailStart, size);
+        } else {
+            return FileCache.read(file, begin, begin + size);
+        }
     }
 
     /**
