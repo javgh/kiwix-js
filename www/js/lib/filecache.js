@@ -103,7 +103,7 @@ define(['q'], function(Q) {
      * @return {Promise} promise that resolves to the correctly concatenated data.
      */
     var read = function(file, begin, end) {
-        var blockSize = 8192;
+        var blockSize = 16384;
         // Read large chunks bypassing the block cache because we would have to
         // stitch together too many blocks and would clog the cache.
         if (end - begin > 8192)
@@ -163,12 +163,14 @@ define(['q'], function(Q) {
         req.onerror = req.onabort = function(e) {
             deferred.reject(e);
         };
-        req.open('GET', '/fANHCNNOgRNk0uc16BMFb5KoEbWrovtG9efLbS-toIYXmQ', true);
+        // Add random parameter to try to prevent Chrome from adding an If-Range header
+        // to the request which Skynet portals do not seem to understand.
+        req.open('GET', '/fANHCNNOgRNk0uc16BMFb5KoEbWrovtG9efLbS-toIYXmQ?r=' + Math.random(), true);
         req.responseType = "arraybuffer";
         var adjustedEnd = Math.min(end, file.size)
-        adjustedEnd -= 1  // range end is specified inclusive
+        adjustedEnd -= 1  // range end is inclusive
         req.setRequestHeader('Range', 'bytes='+begin+'-'+adjustedEnd);
-        req.send(null);
+        req.send();
 
         return deferred.promise;
     };

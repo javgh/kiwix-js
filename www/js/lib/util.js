@@ -214,9 +214,15 @@ define(['q', 'filecache'], function(Q, FileCache) {
         });
     }
 
+    function readBlobSlice(blob, begin, size) {
+        return blob.slice(begin, begin + size).arrayBuffer().then(function(buffer) {
+            return new Uint8Array(buffer);
+        });
+    };
+
     function readFileSlice(file, begin, size) {
         if (begin >= file.tailStart) {
-            return readFileSliceOrig(file.tailCache, begin - file.tailStart, size);
+            return readBlobSlice(file.tailCache, begin - file.tailStart, size);
         } else {
             return FileCache.read(file, begin, begin + size);
         }

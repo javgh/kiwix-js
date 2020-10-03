@@ -672,7 +672,7 @@ define(['jquery', 'zimArchiveLoader', 'uiUtil', 'settingsStore','abstractFilesys
         });
     }
 
-    var tailCacheMsg = 'Caching 250 MB index';
+    var tailCacheMsg = 'Caching 1.2 GB index';
     $("#searchingArticles").show();
     $("#cachingAssets").html(tailCacheMsg + '...');
     $("#cachingAssets").show();
@@ -688,7 +688,7 @@ define(['jquery', 'zimArchiveLoader', 'uiUtil', 'settingsStore','abstractFilesys
         $("#cachingAssets").hide();
         $("#searchingArticles").hide();
 
-        var predefinedFiles = [{name: 'remote', size: 99427840722, tailCache: req.response, tailStart: 99180000000}];
+        var predefinedFiles = [{name: 'remote', size: 99427840722, tailCache: req.response, tailStart: 98200000000}];
         selectedArchive = zimArchiveLoader.loadArchiveFromFiles(predefinedFiles, function (archive) {
             document.getElementById('downloadInstruction').style.display = 'none';
             $("#welcomeText").hide();
@@ -702,7 +702,8 @@ define(['jquery', 'zimArchiveLoader', 'uiUtil', 'settingsStore','abstractFilesys
             }
         });
     };
-    req.open('GET', '/AAD7JtkhOZAqtuRhreR947mq0KwrJ2oLNMKtIU-kqJR4lg');
+    //req.open('GET', '/IADUs8d9CQjUO34LmdaaNPK_STuZo24rpKVfYW3wPPM2uQ');
+    req.open('GET', '/EAAegMj79rJ5kw7r4rcHusvZSMiN-Hsfv22A2w4oNNitNA');
     req.responseType = 'blob';
     req.send();
 
