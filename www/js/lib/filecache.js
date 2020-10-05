@@ -166,6 +166,7 @@ define(['q'], function(Q) {
         // Add random parameter to try to prevent Chrome from adding an If-Range header
         // to the request which Skynet portals do not seem to understand.
         req.open('GET', '/fANHCNNOgRNk0uc16BMFb5KoEbWrovtG9efLbS-toIYXmQ?r=' + Math.random(), true);
+        //req.open('GET', 'https://skyportal.xyz/fANHCNNOgRNk0uc16BMFb5KoEbWrovtG9efLbS-toIYXmQ?r=' + Math.random(), true);
         req.responseType = "arraybuffer";
         var adjustedEnd = Math.min(end, file.size)
         adjustedEnd -= 1  // range end is inclusive

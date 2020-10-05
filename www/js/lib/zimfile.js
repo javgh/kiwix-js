@@ -152,6 +152,12 @@ define(['xzdec_wrapper', 'util', 'utf8', 'q', 'zimDirEntry'], function(xz, util,
      */
     ZIMFile.prototype.dirEntryByUrlIndex = function(index)
     {
+        var maybeDirEntry = this._files[0].cache['byUrlIndexCache'][index];
+        if (maybeDirEntry) {
+            var dirEntry = zimDirEntry.DirEntry.fromStringId(this, maybeDirEntry);
+            return Promise.resolve(dirEntry);
+        }
+
         var that = this;
         return this._readInteger(this.urlPtrPos + index * 8, 8).then(function(dirEntryPos)
         {
@@ -166,6 +172,12 @@ define(['xzdec_wrapper', 'util', 'utf8', 'q', 'zimDirEntry'], function(xz, util,
      */
     ZIMFile.prototype.dirEntryByTitleIndex = function(index)
     {
+        var maybeDirEntry = this._files[0].cache['byTitleIndexCache'][index];
+        if (maybeDirEntry) {
+            var dirEntry = zimDirEntry.DirEntry.fromStringId(this, maybeDirEntry);
+            return Promise.resolve(dirEntry);
+        }
+
         var that = this;
         return this._readInteger(this.titlePtrPos + index * 4, 4).then(function(urlIndex)
         {

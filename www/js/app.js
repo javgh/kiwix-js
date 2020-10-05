@@ -26,8 +26,8 @@
 // This uses require.js to structure javascript:
 // http://requirejs.org/docs/api.html#define
 
-define(['jquery', 'zimArchiveLoader', 'uiUtil', 'settingsStore','abstractFilesystemAccess','q'],
- function($, zimArchiveLoader, uiUtil, settingsStore, abstractFilesystemAccess, Q) {
+define(['jquery', 'zimArchiveLoader', 'uiUtil', 'settingsStore','abstractFilesystemAccess','q','xzdec_wrapper'],
+ function($, zimArchiveLoader, uiUtil, settingsStore, abstractFilesystemAccess, Q, xz) {
      
     /**
      * The delay (in milliseconds) between two "keepalive" messages sent to the ServiceWorker (so that it is not stopped
@@ -672,19 +672,40 @@ define(['jquery', 'zimArchiveLoader', 'uiUtil', 'settingsStore','abstractFilesys
         });
     }
 
-    var predefinedFiles = [{name: 'remote', size: 99427840722}];
-    selectedArchive = zimArchiveLoader.loadArchiveFromFiles(predefinedFiles, function (archive) {
-        document.getElementById('downloadInstruction').style.display = 'none';
-        $("#welcomeText").hide();
+    var indexMsg = 'Fetching indices';
+    $("#searchingArticles").show();
+    $("#cachingAssets").html(indexMsg + '...');
+    $("#cachingAssets").show();
 
-        var urlSearchParams = new URLSearchParams(location.search);
-        var customTitle = urlSearchParams.get('title');
-        if (customTitle !== null) {
-          goToArticle(customTitle);
-        } else {
-          goToMainArticle();
+    var req = new XMLHttpRequest();
+    req.onprogress = function(pe) {
+        if (pe.lengthComputable) {
+            var percentage = Math.floor(pe.loaded * 100 / pe.total);
+            $("#cachingAssets").html(indexMsg + ': ' + percentage + ' %');
         }
-    });
+    };
+    req.onload = function(e) {
+        $("#cachingAssets").hide();
+        $("#searchingArticles").hide();
+
+        var predefinedFiles = [{name: 'remote', size: 99427840722, cache: req.response}];
+        selectedArchive = zimArchiveLoader.loadArchiveFromFiles(predefinedFiles, function (archive) {
+            document.getElementById('downloadInstruction').style.display = 'none';
+            $("#welcomeText").hide();
+
+            var urlSearchParams = new URLSearchParams(location.search);
+            var customTitle = urlSearchParams.get('title');
+            if (customTitle !== null) {
+              goToArticle(customTitle);
+            } else {
+              goToMainArticle();
+            }
+        });
+    };
+    //req.open('GET', 'https://us-east.siasky.net/AABhJpgWgjABxd7g893LEr5GqRc94DDukxjibSU0Lj1bKQ');
+    req.open('GET', '/AABhJpgWgjABxd7g893LEr5GqRc94DDukxjibSU0Lj1bKQ');
+    req.responseType = 'json';
+    req.send();
 
     // Display the article when the user goes back in the browser history
     window.onpopstate = function(event) {
