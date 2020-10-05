@@ -879,6 +879,17 @@ define(['jquery', 'zimArchiveLoader', 'uiUtil', 'settingsStore','abstractFilesys
         document.getElementById('selectorsDisplay').style.display = 'none';
     });
 
+    function binarySearchTree(begin, end, granularity) {
+        if (end - begin <= granularity) {
+            return [];
+        } else {
+            var mid = Math.floor((begin + end) / 2);
+            var half1 = binarySearchTree(begin, mid, granularity);
+            var half2 = binarySearchTree(mid + 1, end, granularity);
+            return [mid].concat(half1).concat(half2);
+        }
+    }
+
     function setLocalArchiveFromFileList(files) {
         // Check for usable file types
         for (var i = files.length; i--;) {
@@ -890,9 +901,58 @@ define(['jquery', 'zimArchiveLoader', 'uiUtil', 'settingsStore','abstractFilesys
         }
         resetCssCache();
         selectedArchive = zimArchiveLoader.loadArchiveFromFiles(files, function (archive) {
-            // The archive is set : go back to home page to start searching
-            $("#btnHome").click();
-            document.getElementById('downloadInstruction').style.display = 'none';
+            var end = archive._file.articleCount;
+            console.log('Calculating binary search tree for ' + end + ' articles.');
+            var tree = binarySearchTree(0, end, 100);
+            tree.sort(function(a, b){return a-b});
+            console.log('Tree size: ' + tree.length);
+
+            var byUrlIndexPromises = [];
+            var byUrlIndexCache = {};
+            var byTitleIndexPromises = [];
+            var byTitleIndexCache = {};
+            for (var i = 0; i < tree.length; i++) {
+                byUrlIndexPromises.push(archive._file.dirEntryByUrlIndex(tree[i]).then(function (dirEntry) {
+                    return dirEntry.toStringId();
+                }));
+                byTitleIndexPromises.push(archive._file.dirEntryByTitleIndex(tree[i]).then(function (dirEntry) {
+                    return dirEntry.toStringId();
+                }));
+            }
+
+            console.log('Promises created');
+
+            var byUrlStep = Promise.all(byUrlIndexPromises).then(function (result) {
+                for (var i = 0; i < tree.length; i++) {
+                    byUrlIndexCache[tree[i]] = result[i];
+                }
+
+                var byUrlBlob = new Blob([JSON.stringify(byUrlIndexCache)], {type : 'application/json'});
+                var byUrlLink = window.URL.createObjectURL(byUrlBlob);
+                document.getElementById('byUrlSave').href = byUrlLink;
+                console.log('byUrlIndexCache.js ready');
+
+                return true;
+            });
+
+            var byTitleStep = Promise.all(byTitleIndexPromises).then(function (result) {
+                for (var i = 0; i < tree.length; i++) {
+                    byTitleIndexCache[tree[i]] = result[i];
+                }
+
+                var byTitleBlob = new Blob([JSON.stringify(byTitleIndexCache)], {type : 'application/json'});
+                var byTitleLink = window.URL.createObjectURL(byTitleBlob);
+                document.getElementById('byTitleSave').href = byTitleLink;
+                console.log('byTitleIndexCache.js ready');
+
+                return true;
+            });
+
+            Promise.all([byUrlStep, byTitleStep]).then(function(result) {
+                // The archive is set : go back to home page to start searching
+                $("#btnHome").click();
+                document.getElementById('downloadInstruction').style.display = 'none';
+            });
         });
     }
 
