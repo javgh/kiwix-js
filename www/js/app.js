@@ -688,23 +688,35 @@ define(['jquery', 'zimArchiveLoader', 'uiUtil', 'settingsStore','abstractFilesys
         $("#cachingAssets").hide();
         $("#searchingArticles").hide();
 
-        var predefinedFiles = [{name: 'remote', size: 99427840722, cache: req.response}];
-        selectedArchive = zimArchiveLoader.loadArchiveFromFiles(predefinedFiles, function (archive) {
-            document.getElementById('downloadInstruction').style.display = 'none';
-            $("#welcomeText").hide();
+        var xzData = new Uint8Array(req.response);
+        var reader = function(offset, size) {
+            return Promise.resolve(xzData.slice(offset, offset + size));
+        };
+        var decompressor = new xz.Decompressor(reader);
+        var decompressedSize = 51632875;
+        decompressor.readSlice(0, decompressedSize).then(function(data) {
+            let utf8decoder = new TextDecoder();
+            var decoded = utf8decoder.decode(data);
+            var cache = JSON.parse(decoded);
 
-            var urlSearchParams = new URLSearchParams(location.search);
-            var customTitle = urlSearchParams.get('title');
-            if (customTitle !== null) {
-              goToArticle(customTitle);
-            } else {
-              goToMainArticle();
-            }
+            var predefinedFiles = [{name: 'remote', size: 99427840722, cache: cache}];
+            selectedArchive = zimArchiveLoader.loadArchiveFromFiles(predefinedFiles, function (archive) {
+                document.getElementById('downloadInstruction').style.display = 'none';
+                $("#welcomeText").hide();
+
+                var urlSearchParams = new URLSearchParams(location.search);
+                var customTitle = urlSearchParams.get('title');
+                if (customTitle !== null) {
+                  goToArticle(customTitle);
+                } else {
+                  goToMainArticle();
+                }
+            });
         });
     };
-    //req.open('GET', 'https://us-east.siasky.net/AABhJpgWgjABxd7g893LEr5GqRc94DDukxjibSU0Lj1bKQ');
-    req.open('GET', '/AABhJpgWgjABxd7g893LEr5GqRc94DDukxjibSU0Lj1bKQ');
-    req.responseType = 'json';
+    req.open('GET', '/AAAJfZwOeKiZ0uFQikbWoSD3eO6RmhSKWPHnKX8c2_L_ng');
+    //req.open('GET', 'https://siasky.net/AAAJfZwOeKiZ0uFQikbWoSD3eO6RmhSKWPHnKX8c2_L_ng');
+    req.responseType = 'arraybuffer';
     req.send();
 
     // Display the article when the user goes back in the browser history
