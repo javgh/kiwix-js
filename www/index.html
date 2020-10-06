@@ -55,7 +55,7 @@
         <section id="search-article" role="region">
             <header id="top">
                 <nav class="navbar navbar-expand-md bg-light" role="navigation">
-                    <a class="navbar-brand">Kiwix 2.9-WIP</a>
+                    <a class="navbar-brand">Kiwix 2.9</a>
 
                     <!-- Toggler/collapsible Button -->
                     <button class="navbar-toggler" type="button" data-toggle="collapse"
@@ -100,58 +100,14 @@
                     Kiwix : offline Wikipedia viewer
                     </h2>
                     <p>Official site : <a href="https://www.kiwix.org/" target="_blank">https://www.kiwix.org/</a></p>
-                    <p>If your Internet access is expensive/rare/slow/unreliable/watched/censored, you still can browse amazing amounts of knowledge and culture.</p>
-                    <p>The content is packages in file archives called ZIM files. Once you have downloaded material from the Kiwix website, you will be able to read material from Wikipedia and many other sources. You can search among the article titles, and read any of these articles offline, without needing Internet access.
-                    </p>
-                    <p>All the content of Wikipedia is inside your device (including the images). It might also work with any content in the <a href="https://wiki.openzim.org/wiki/OpenZIM">OpenZIM format</a>, but has been only tested extensively on the Wikipedia ones.</p>
-                    <h3>Usage</h3>
-                    <h4>Step 1 : download some content</h4>
-                    <p>Go to <a href="https://download.kiwix.org/zim" target="_blank">https://download.kiwix.org/zim/</a>, with a regular computer.</p>
-                    <p><strong>Currently only Mediawiki-based contents (ZIM files in wiki* subdirectories, for instance <a href="https://download.kiwix.org/zim/wikipedia/" target="_blank">https://download.kiwix.org/zim/wikipedia/</a>) and StackExchange (<a href="https://download.kiwix.org/zim/stack_exchange/" target="_blank">https://download.kiwix.org/zim/stack_exchange/</a>) have been thoroughly tested</strong>.
-                    Dynamic content (e.g. PhET) is only supported in Service Worker mode (see Configuration: Expert Settings).</p>
-                    <p>For a quick test, you can start with the <a href="https://download.kiwix.org/zim/wikipedia_en_ray_charles_maxi.zim" target="_blank">"Ray Charles" ZIM file</a> : it contains some wikipedia articles about Ray Charles.</p>
-                    <p>After that, you can download materials in your language. Check the size before you download files as many of the files are large (several Gigabytes).
-                    If the file is larger than 2 GB, it might not be supported by your device if your storage is formatted using a FAT filesystem. If so, it's possible to split the material into several 2GB files : see <a href="https://wiki.kiwix.org/wiki/FAQ">the Kiwix FAQ</a></p>
-                    <h4>Step 2 : copy the content onto your device</h4>
-                    <p>If you have enough space, you can put several archives.</p>
-                    <h4>Step 3 : drag and drop the archive file into the open the app</h4>
-                    <p>Or go to the "Configure" menu and select your ZIM file.</p>
-                    <h4>Step 4 : enjoy Wikipedia offline!</h4>
-                    <br />
-                    <h3>Privacy policy</h3>
-                    <h4>Short answer:</h4>
-                    <p>Kiwix JS works offline, and does not collect or record any of your personal data. It only remembers
-                        your browsing history for the duration of a session (for the purpose of returning to previously
-                        viewed pages). This history is lost on exiting the app and is not recorded in any way.</p>
-                    <h4>Longer answer:</h4>
-                    <p>This application only reads the archive files that you explicitly select on your device together
-                        with files in its own package. Some ZIM archives contain active content (scripts) which may, in
-                        rare circumstances, attempt to contact external servers for incidental files such as fonts.
-                        These scripts will only run if you enable Service Worker mode in Configuration. Nevertheless, if
-                        you believe your Internet access is insecure, or is being observed or censored, we recommend
-                        that you completely shut down your Internet (Data or WiFi) access before using the application.</p>
-                    <p>Additionally, if you obtained this app from a vendor Store (including extensions), then the Store
-                        operator may track your usage of the app (e.g. download, install, uninstall, date and number of
-                        sessions) for the purpose of providing anonymous, aggregate usage statistics to developers. If
-                        this concerns you, you should check the relevant Store Privacy Policy for further information.
-                    </p>
-                    <h3>Feedback / helping / contributing</h3>
-                    This application is still work in progress. There may be bugs and issues, and new features are planned.
-                    Suggestions and patches/pull requests are welcome : the source code is on <a href="https://github.com/kiwix/kiwix-js" target="_blank">github</a>.
-                    The <a href="https://github.com/kiwix/kiwix-js/issues" target="_blank">bugtracker</a> is on github too. We use it as our roadmap.
-                    <br />Alternatively, you can send your feedback <a href="mailto:mossroy@mossroy.fr?subject=%5BKiwix%5D%20Feedback%20about%20Kiwix%20JS">by email</a>.
-                    <br />In all cases, please give as much detail as you can : which device you are using, which version of Kiwix, which archive, which articles etc.
-                    <br />
-                    <br />If you like the Kiwix project and use it, please consider giving donations :
-                    <ul>
-                        <li>to the Wikimedia foundation, to help maintaining their servers and article contents. See the <a href="https://donate.wikimedia.org/" target="_blank">donation page</a></li>
-                        <li>to Kiwix, to help maintaining the ZIM files and applications. There is a donation button in  the <a href="https://www.kiwix.org">home page of kiwix.org</a></li>
-                    </ul>
-                    You can also help by :
-                    <ul>
-                        <li>Adding articles or improving the existing ones, by <a href="https://en.wikipedia.org/wiki/Wikipedia:Introduction" target="_blank">editing online wikipedia articles</a></li>
-                        <li><a href="https://wiki.kiwix.org/wiki/Special:MyLanguage/Participate" target="_blank">Participating</a> in the Kiwix project</li>
-                    </ul>
+                    <p>This version of Kiwix has been modified to access a ZIM file of the English Wikipedia hosted on <a href="https://siasky.net/">Skynet</a>.</p>
+                    <p>The source code of the modified version can be found at <a href="https://github.com/javgh/kiwix-js/tree/skynet">https://github.com/javgh/kiwix-js/tree/skynet</a>.
+                    This is based on work done by sharun-s to access ZIM files remotely and integrates a block-level cache developed by peter-x (<a href="https://github.com/kiwix/kiwix-js/pull/183">see this pull request</a>)
+                    to speed up http-based access. It also uses some precomputed indices (see <a href="https://github.com/javgh/kiwix-js/tree/extract-index">https://github.com/javgh/kiwix-js/tree/extract-index</a>) to
+                    speed up searching through the database. <b>Please note: This is a hack.</b></p>
+
+                    <p>Credits and license information for the original Kiwix project follow:</p>
+
                     <h3>Credits</h3>
                     We have to distribute some thanks to :
                     <ul>
